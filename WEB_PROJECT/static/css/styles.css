@@ -1,0 +1,33 @@
+.bl1 {
+background-color: rgba(222, 158, 163, 1);
+height: 100vh;
+}
+
+.blog {
+background-color: (0, 0, 0);
+width: 790px;
+display: inline-block;
+}
+
+
+
+/* Color Theme Swatches in Hex
+.di_5-1-hex { color: #599166; }
+.di_5-2-hex { color: #CFFFDA; }
+.di_5-3-hex { color: #9FDFAE; }
+.di_5-4-hex { color: #914A50; }
+.di_5-5-hex { color: #DE9EA3; }
+
+ Color Theme Swatches in RGBA
+.di_5-1-rgba { color: rgba(89, 145, 102, 1); }
+.di_5-2-rgba { color: rgba(207, 255, 218, 1); }
+.di_5-3-rgba { color: rgba(159, 223, 174, 1); }
+.di_5-4-rgba { color: rgba(145, 74, 80, 1); }
+.di_5-5-rgba { color: rgba(222, 158, 163, 1); }
+
+
+.di_5-1-hsla { color: hsla(133, 23, 45, 1); }
+.di_5-2-hsla { color: hsla(133, 100, 90, 1); }
+.di_5-3-hsla { color: hsla(134, 50, 74, 1); }
+.di_5-4-hsla { color: hsla(354, 32, 42, 1); }
+.di_5-5-hsla { color: hsla(355, 49, 74, 1); } */
