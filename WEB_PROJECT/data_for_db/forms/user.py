@@ -11,3 +11,4 @@ class RegisterForm(FlaskForm):
     name = StringField('Username', validators=[DataRequired()])
     about = TextAreaField("About(optionally)")
     submit = SubmitField('Enter')
+
