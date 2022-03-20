@@ -34,22 +34,22 @@ class LoginForm(FlaskForm):
 def main():
     db_session.global_init("db/di_just.db")
     db_sess = db_session.create_session()
-    user = User(name="milana", about="just test", hashed_password="123")
-    digest = Digests(title="test-1", content="it is the first digest",
-                is_private=False)
-    link = Links(link="test.ru", description="it the first test link eurika")
-    digest.link.append(link)
-    user.djs.append(digest)
-    db_sess.add(user)
-    db_sess.commit()
-
-    print(user.name)
-
-    for digest in user.djs:
-        print(1)
-        print(digest.content)
-        for linkk in digest.link:
-            print(linkk.description)
+    # user = User(name="milana", about="just test", hashed_password="123")
+    # digest = Digests(title="test-1", content="it is the first digest",
+    #             is_private=False)
+    # link = Links(link="test.ru", description="it the first test link eurika")
+    # digest.link.append(link)
+    # user.djs.append(digest)
+    # db_sess.add(user)
+    # db_sess.commit()
+    #
+    # print(user.name)
+    #
+    # for digest in user.djs:
+    #     print(1)
+    #     print(digest.content)
+    #     for linkk in digest.link:
+    #         print(linkk.description)
 
     '''app.register_blueprint(news_api.blueprint)
     db_sess = db_session.create_session()
@@ -103,28 +103,28 @@ def reqister():
         return redirect('/login')
     return render_template('register.html', title='Register', form=form)
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         user = db_sess.query(User).filter(User.email == form.email.data).first()
-#         if user and user.check_password(form.password.data):
-#             login_user(user, remember=form.remember_me.data)
-#             return redirect("/")
-#         return render_template('login.html',
-#                                message="Неправильный логин или пароль",
-#                                form=form)
-#     return render_template('login.html', title='Авторизация', form=form)
-#
-#
-# @app.route('/logout')
-# @login_required
-# def logout():
-#     logout_user()
-#     return redirect("/")
-#
-#
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form)
+    return render_template('login.html', title='Авторизация', form=form)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
+
+
 # @app.route('/news/<int:id>', methods=['GET', 'POST'])
 # @login_required
 # def edit_news(id):
