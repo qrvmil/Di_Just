@@ -10,7 +10,7 @@ from data.users import User
 from data.digests import Digests
 from data.links import Links
 from forms.user import RegisterForm
-
+from forms.adddigest import DigestsForm
 
 app = Flask(__name__)
 login_manager = LoginManager()
@@ -103,6 +103,7 @@ def reqister():
         return redirect('/login')
     return render_template('register.html', title='Register', form=form)
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -174,23 +175,27 @@ def logout():
 #     return redirect('/')
 #
 #
-# @app.route('/news', methods=['GET', 'POST'])
-# @login_required
-# def add_news():
-#     form = NewsForm()
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         news = News()
-#         news.title = form.title.data
-#         news.content = form.content.data
-#         news.is_private = form.is_private.data
-#         current_user.news.append(news)
-#         db_sess.merge(current_user)
-#         db_sess.commit()
-#         return redirect('/')
-#     return render_template('news.html', title='Добавление новости',
-#                            form=form)
-#
+@app.route('/adddigest', methods=['GET', 'POST'])
+@login_required
+def add_news():
+    form = DigestsForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        digest = Digests()
+        digest.title = form.title.data
+        digest.content = form.content.data
+        digest.is_private = form.is_private.data
+        link = Links()
+        link.link = form.link.data
+        link.description = form.description.data
+        digest.link.append(link)
+        current_user.djs.append(digest)
+        db_sess.merge(current_user)
+        db_sess.commit()
+        return redirect('/')
+    return render_template('adddigest.html', title='Add digest',
+                           form=form)
+
 
 if __name__ == '__main__':
     main()
@@ -209,4 +214,3 @@ if __name__ == '__main__':
     #     print(news.content)
     #
     # app.run(port=8080, host='127.0.0.1')
-
