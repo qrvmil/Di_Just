@@ -13,7 +13,14 @@
     </div>
     {% for link in item.link %}
     <div>
-        <p>{{link.link}} <br> {{link.content}}</p>
+        <div class="card" style="width: 18rem;">
+            <img src="https://images.unsplash.com/photo-1647784057692-7c7116f86c7d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Card</h5>
+                <p class="card-text"> {{link.description}} </p>
+                <a href={{link.link}} class="btn btn-primary stretched-link">Go</a>
+            </div>
+        </div>
     </div>
     {% endfor %}
     <div>
