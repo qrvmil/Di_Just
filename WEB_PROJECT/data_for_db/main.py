@@ -177,19 +177,25 @@ def logout():
 #
 @app.route('/adddigest', methods=['GET', 'POST'])
 @login_required
-def add_news():
+def add_digest():
     form = DigestsForm()
     if form.validate_on_submit():
+
+        print(form.all_links[0].data)
+
         db_sess = db_session.create_session()
         digest = Digests()
         digest.title = form.title.data
         digest.content = form.content.data
         digest.is_private = form.is_private.data
-        link = Links()
-        link.link = form.link.data
-        link.description = form.description.data
+
+        for link_elem in form.all_links:
+            link = Links(link=link_elem.form.link.data, description=link_elem.form.description.data)
+            digest.link.append(link)
+
         digest.link.append(link)
         current_user.djs.append(digest)
+
         db_sess.merge(current_user)
         db_sess.commit()
         return redirect('/')
