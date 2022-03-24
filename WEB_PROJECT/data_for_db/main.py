@@ -25,10 +25,10 @@ def load_user(user_id):
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Почта', validators=[DataRequired()])
-    password = PasswordField('Пароль', validators=[DataRequired()])
-    remember_me = BooleanField('Запомнить меня')
-    submit = SubmitField('Войти')
+    email = EmailField('Email', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Remember me')
+    submit = SubmitField('Go')
 
 
 def main():
@@ -233,6 +233,12 @@ def add_digest():
     return render_template('adddigest.html', title='Add digest',
                            form=form)
 
+@app.route('/user')
+@login_required
+def return_user():
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id)
+    return render_template("user.html", user=user)
 
 if __name__ == '__main__':
     main()
