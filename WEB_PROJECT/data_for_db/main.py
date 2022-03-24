@@ -126,55 +126,84 @@ def logout():
     return redirect("/")
 
 
-# @app.route('/news/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def edit_news(id):
-#     form = NewsForm()
-#     if request.method == "GET":
-#         db_sess = db_session.create_session()
-#         news = db_sess.query(News).filter(News.id == id,
-#                                           News.user == current_user
-#                                           ).first()
-#         if news:
-#             form.title.data = news.title
-#             form.content.data = news.content
-#             form.is_private.data = news.is_private
-#         else:
-#             abort(404)
-#     if form.validate_on_submit():
-#         db_sess = db_session.create_session()
-#         news = db_sess.query(News).filter(News.id == id,
-#                                           News.user == current_user
-#                                           ).first()
-#         if news:
-#             news.title = form.title.data
-#             news.content = form.content.data
-#             news.is_private = form.is_private.data
-#             db_sess.commit()
-#             return redirect('/')
-#         else:
-#             abort(404)
-#     return render_template('news.html',
-#                            title='Редактирование новости',
-#                            form=form
-#                            )
-#
-#
-# @app.route('/news_delete/<int:id>', methods=['GET', 'POST'])
-# @login_required
-# def news_delete(id):
-#     db_sess = db_session.create_session()
-#     news = db_sess.query(News).filter(News.id == id,
-#                                       News.user == current_user
-#                                       ).first()
-#     if news:
-#         db_sess.delete(news)
-#         db_sess.commit()
-#     else:
-#         abort(404)
-#     return redirect('/')
-#
-#
+@app.route('/adddigest/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_digest(id):
+    form = DigestsForm()
+    if request.method == "GET":
+        db_sess = db_session.create_session()
+        dg = db_sess.query(Digests).filter(Digests.id == id,
+                                           Digests.user == current_user
+                                           ).first()
+        if dg:
+            form.title.data = dg.title
+            form.content.data = dg.content
+            form.is_private.data = dg.is_private
+
+            i = 0
+
+            for link_elem in form.all_links:
+                link_elem.form.link.data = dg.link[0].link
+                link_elem.form.description.data = dg.link[0].description
+                i += 1
+
+            # ПОЧЕМУ ОНО НЕ РАБОТАЕТ
+            # i = 0
+            # for link in dg.link:
+            #     form.all_links.data[i]['link'] = link.link
+            #     print(link.link)
+            #     print('current form link:', form.all_links.data[i]['link'])
+            #     form.all_links.data[i]['description'] = link.description
+            #     print(link.description)
+            #     print(i)
+            #     i += 1
+            print('form all_links data:', form.all_links.data)
+        else:
+            abort(404)
+
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        dg = db_sess.query(Digests).filter(Digests.id == id,
+                                           Digests.user == current_user
+                                           ).first()
+        if dg:
+            dg.title = form.title.data
+            dg.content = form.content.data
+            dg.is_private = form.is_private.data
+
+            i = 0
+            for link_elem in form.all_links:
+                link = Links(link=link_elem.form.link.data, description=link_elem.form.description.data)
+                dg.link[i] = link
+                i += 1
+
+            db_sess.commit()
+            return redirect('/')
+        else:
+            abort(404)
+    return render_template('adddigest.html',
+                           title='Edit digest',
+                           form=form
+                           )
+
+
+@app.route('/digest_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(id):
+    db_sess = db_session.create_session()
+    dg = db_sess.query(Digests).filter(Digests.id == id,
+                                       Digests.user == current_user
+                                       ).first()
+    if dg:
+        for elem in dg.link:
+            db_sess.delete(elem)
+        db_sess.delete(dg)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
 @app.route('/adddigest', methods=['GET', 'POST'])
 @login_required
 def add_digest():
@@ -188,6 +217,8 @@ def add_digest():
         digest.title = form.title.data
         digest.content = form.content.data
         digest.is_private = form.is_private.data
+
+        print(form.all_links)
 
         for link_elem in form.all_links:
             link = Links(link=link_elem.form.link.data, description=link_elem.form.description.data)
@@ -205,18 +236,3 @@ def add_digest():
 
 if __name__ == '__main__':
     main()
-    # db_session.global_init("db/blogs.db")
-    # app.register_blueprint(news_api.blueprint)
-    # db_sess = db_session.create_session()
-    #
-    # user = db_sess.query(User).filter(User.id == 1).first()
-    # news = News(title="Личная запись", content="Эта запись личная",
-    #             is_private=True)
-    # user.news.append(news)
-    # db_sess.commit()
-    #
-    # for news in user.news:
-    #     print(1)
-    #     print(news.content)
-    #
-    # app.run(port=8080, host='127.0.0.1')
