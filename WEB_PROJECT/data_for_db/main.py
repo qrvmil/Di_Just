@@ -237,7 +237,7 @@ def add_digest():
 @login_required
 def return_user():
     db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id == current_user.id)
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
     return render_template("user.html", user=user)
 
 if __name__ == '__main__':
