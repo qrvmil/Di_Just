@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from werkzeug.exceptions import abort
 from wtforms import EmailField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
+from flask_jwt_extended import JWTManager
 
 from data import db_session
 from data.users import User
@@ -12,10 +13,18 @@ from data.links import Links
 from forms.user import RegisterForm
 from forms.adddigest import DigestsForm
 
+from flask_restful import Api
+
 app = Flask(__name__)
+api = Api(app)
+
+import resources
+
 login_manager = LoginManager()
 login_manager.init_app(app)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
+app.config['SECRET_KEY'] = 'some_secret_key_overload-hyperlink'
+app.config['JWT_SECRET_KEY'] = 'cliche-argentum-defenestration-dolphin'
+jwt = JWTManager(app)
 
 
 @login_manager.user_loader
@@ -63,6 +72,14 @@ def main():
     for news in user.news:
         print(1)
         print(news.content)'''
+
+    api.add_resource(resources.UserRegistration, '/api/registration')
+    api.add_resource(resources.UserLogin, '/api/login')
+    api.add_resource(resources.UserLogoutAccess, '/api/logout/access')
+    api.add_resource(resources.UserLogoutRefresh, '/api/logout/refresh')
+    api.add_resource(resources.TokenRefresh, '/api/token/refresh')
+    api.add_resource(resources.AllUsers, '/api/users')
+    api.add_resource(resources.SecretResource, '/api/secret')
 
     app.run(port=8080, host='127.0.0.1')
 
@@ -233,12 +250,14 @@ def add_digest():
     return render_template('adddigest.html', title='Add digest',
                            form=form)
 
+
 @app.route('/user')
 @login_required
 def return_user():
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.id == current_user.id).first()
     return render_template("user.html", user=user)
+
 
 if __name__ == '__main__':
     main()
