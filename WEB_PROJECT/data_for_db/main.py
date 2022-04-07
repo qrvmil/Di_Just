@@ -121,6 +121,7 @@ def reqister():
         db_sess.add(user)
         db_sess.commit()
         return redirect('/login')
+
     return render_template('register.html', title='Register', form=form)
 
 
