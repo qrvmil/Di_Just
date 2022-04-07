@@ -32,18 +32,15 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         return check_password_hash(self.hashed_password, password)
 
     def save_to_db(self):
-        db_session.global_init("db/di_just.db")
         db = db_session.create_session()
         db.add(self)
         db.commit()
 
     def find_by_username(username):
-        db_session.global_init("db/di_just.db")
         db = db_session.create_session()
         return db.query(User).filter(User.name == username).first()
 
     def return_all():
-        db_session.global_init("db/di_just.db")
         db_sess = db_session.create_session()
         news = db_sess.query(User).all()
         return jsonify(
@@ -55,7 +52,6 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         )
 
     def delete_all():
-        db_session.global_init("db/di_just.db")
         db_sess = db_session.create_session()
         try:
             num_rows = db_sess.query(User).all()
