@@ -1,7 +1,5 @@
 from flask import make_response, jsonify
 
-from data_for_db.data.users import User
-
 
 def make_resp(message, status):
     resp = make_response((message, status))
