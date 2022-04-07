@@ -43,7 +43,7 @@ class LoginForm(FlaskForm):
 
 
 def main():
-    db_session.global_init("db/di_just.db")
+    db_session.global_init("./db/di_just.db")
     db_sess = db_session.create_session()
     # user = User(name="milana", about="just test", hashed_password="123")
     # digest = Digests(title="test-1", content="it is the first digest",
