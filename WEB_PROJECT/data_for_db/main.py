@@ -255,6 +255,11 @@ def add_digest():
     return render_template('adddigest.html', title='Add digest',
                            form=form)
 
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
 
 @app.route('/user')
 @login_required
