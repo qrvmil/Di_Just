@@ -43,7 +43,7 @@ class LoginForm(FlaskForm):
 
 
 def main():
-    db_session.global_init("./db/di_just.db")
+    db_session.global_init("db/di_just.db")
     db_sess = db_session.create_session()
     # user = User(name="milana", about="just test", hashed_password="123")
     # digest = Digests(title="test-1", content="it is the first digest",
@@ -82,7 +82,6 @@ def main():
     api.add_resource(resources.TokenRefresh, '/api/token/refresh')
     api.add_resource(resources.AllUsers, '/api/users')
     api.add_resource(resources.SecretResource, '/api/secret')
-
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
@@ -255,10 +254,10 @@ def add_digest():
     return render_template('adddigest.html', title='Add digest',
                            form=form)
 
+
 @app.route('/about')
 def about():
     return render_template('about.html')
-
 
 
 @app.route('/user')
