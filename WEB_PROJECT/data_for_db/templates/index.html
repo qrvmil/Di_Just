@@ -46,6 +46,7 @@
 </header>
 <main role="main" class="container">
     <h1>Digests</h1>
+    <a href="adddigest" class="btn btn-secondary">add digest</a>
     {% for item in digests%}
     <div class="col-md6 border rounded">
         <h2>{{item.title}}</h2>
@@ -75,6 +76,8 @@
                         <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                             Author : {{item.user.name}}
+                            <a href="/adddigest/{{ item.id }}" class="btn btn-warning">
+                                Edit
                         </button>
                     </h2>
                     <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
