@@ -9,6 +9,8 @@ from . import db_session
 from sqlalchemy import orm
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from .db_session import get_session
+
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
@@ -41,8 +43,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         return db.query(User).filter(User.name == username).first()
 
     def return_all():
-        db_sess = db_session.create_session()
-        news = db_sess.query(User).all()
+
+        news = get_session().query(User).all()
         return jsonify(
             {
                 'users':
@@ -52,17 +54,17 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         )
 
     def delete_all():
-        db_sess = db_session.create_session()
+
         try:
-            num_rows = db_sess.query(User).all()
+            num_rows = get_session().query(User).all()
             for row in num_rows:
                 for digest in row.news:
                     for link in digest:
-                        db_sess.delete(link)
-                    db_sess.delete(digest)
+                        get_session().delete(link)
+                    get_session().delete(digest)
 
-            num_rows_deleted = db_sess.query(User).delete()
-            db_sess.commit()
+            num_rows_deleted = get_session().query(User).delete()
+            get_session().commit()
             return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
         except:
             return {'message': 'Something went wrong'}

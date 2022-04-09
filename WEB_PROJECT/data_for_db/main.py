@@ -8,7 +8,7 @@ from wtforms import EmailField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from flask_jwt_extended import JWTManager
 
-from data import db_session
+from data.db_session import get_session, global_init
 from data.users import User
 from data.digests import Digests
 from data.links import Links
@@ -17,6 +17,16 @@ from forms.adddigest import DigestsForm
 
 from flask_restful import Api
 
+
+# Will not work on Heroku, but needed for tests
+from dotenv import load_dotenv
+dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(dotenv_path):
+    load_dotenv(dotenv_path)
+    
+if __name__ == '__main__':
+    global_init(os.environ.get('DATABASE_URL'))
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -24,15 +34,14 @@ import resources
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-app.config['SECRET_KEY'] = 'some_secret_key_overload-hyperlink'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['JWT_SECRET_KEY'] = 'cliche-argentum-defenestration-dolphin'
 jwt = JWTManager(app)
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return get_session().query(User).get(user_id)
 
 
 class LoginForm(FlaskForm):
@@ -43,16 +52,15 @@ class LoginForm(FlaskForm):
 
 
 def main():
-    db_session.global_init("db/di_just.db")
-    db_sess = db_session.create_session()
+    global_init(os.environ.get('DATABASE_URL'))
     # user = User(name="milana", about="just test", hashed_password="123")
     # digest = Digests(title="test-1", content="it is the first digest",
     #             is_private=False)
     # link = Links(link="test.ru", description="it the first test link eurika")
     # digest.link.append(link)
     # user.djs.append(digest)
-    # db_sess.add(user)
-    # db_sess.commit()
+    # get_session().add(user)
+    # get_session().commit()
     #
     # print(user.name)
     #
@@ -63,13 +71,12 @@ def main():
     #         print(linkk.description)
 
     '''app.register_blueprint(news_api.blueprint)
-    db_sess = db_session.create_session()
 
-    user = db_sess.query(User).filter(User.id == 1).first()
+    user = get_session().query(User).filter(User.id == 1).first()
     news = News(title="Личная запись", content="Эта запись личная",
                 is_private=True)
     user.news.append(news)
-    db_sess.commit()
+    get_session().commit()
 
     for news in user.news:
         print(1)
@@ -89,12 +96,11 @@ def main():
 
 @app.route("/")
 def index():
-    db_sess = db_session.create_session()
     if current_user.is_authenticated:
-        digests = db_sess.query(Digests).filter(
+        digests = get_session().query(Digests).filter(
             (Digests.user == current_user) | (Digests.is_private != True))
     else:
-        digests = db_sess.query(Digests).filter(Digests.is_private != True)
+        digests = get_session().query(Digests).filter(Digests.is_private != True)
 
     return render_template("index.html", digests=digests)
 
@@ -107,8 +113,7 @@ def reqister():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
-        if db_sess.query(User).filter(User.email == form.email.data).first():
+        if get_session().query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Такой пользователь уже есть")
@@ -118,8 +123,8 @@ def reqister():
             about=form.about.data
         )
         user.set_password(form.password.data)
-        db_sess.add(user)
-        db_sess.commit()
+        get_session().add(user)
+        get_session().commit()
         return redirect('/login')
 
     return render_template('register.html', title='Register', form=form)
@@ -129,8 +134,7 @@ def reqister():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        user = get_session().query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
@@ -152,8 +156,8 @@ def logout():
 def edit_digest(id):
     form = DigestsForm()
     if request.method == "GET":
-        db_sess = db_session.create_session()
-        dg = db_sess.query(Digests).filter(Digests.id == id,
+    
+        dg = get_session().query(Digests).filter(Digests.id == id,
                                            Digests.user == current_user
                                            ).first()
         if dg:
@@ -183,8 +187,8 @@ def edit_digest(id):
             abort(404)
 
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
-        dg = db_sess.query(Digests).filter(Digests.id == id,
+    
+        dg = get_session().query(Digests).filter(Digests.id == id,
                                            Digests.user == current_user
                                            ).first()
         if dg:
@@ -198,7 +202,7 @@ def edit_digest(id):
                 dg.link[i] = link
                 i += 1
 
-            db_sess.commit()
+            get_session().commit()
             return redirect('/')
         else:
             abort(404)
@@ -211,15 +215,15 @@ def edit_digest(id):
 @app.route('/digest_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
-    db_sess = db_session.create_session()
-    dg = db_sess.query(Digests).filter(Digests.id == id,
+
+    dg = get_session().query(Digests).filter(Digests.id == id,
                                        Digests.user == current_user
                                        ).first()
     if dg:
         for elem in dg.link:
-            db_sess.delete(elem)
-        db_sess.delete(dg)
-        db_sess.commit()
+            get_session().delete(elem)
+        get_session().delete(dg)
+        get_session().commit()
     else:
         abort(404)
     return redirect('/')
@@ -233,7 +237,7 @@ def add_digest():
 
         print(form.all_links[0].data)
 
-        db_sess = db_session.create_session()
+    
         digest = Digests()
         digest.title = form.title.data
         digest.content = form.content.data
@@ -248,8 +252,8 @@ def add_digest():
         digest.link.append(link)
         current_user.djs.append(digest)
 
-        db_sess.merge(current_user)
-        db_sess.commit()
+        get_session().merge(current_user)
+        get_session().commit()
         return redirect('/')
     return render_template('adddigest.html', title='Add digest',
                            form=form)
@@ -263,8 +267,8 @@ def about():
 @app.route('/user')
 @login_required
 def return_user():
-    db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.id == current_user.id).first()
+
+    user = get_session().query(User).filter(User.id == current_user.id).first()
     return render_template("user.html", user=user)
 
 
