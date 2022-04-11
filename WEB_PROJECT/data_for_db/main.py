@@ -17,13 +17,12 @@ from forms.adddigest import DigestsForm
 
 from flask_restful import Api
 
-
-# Will not work on Heroku, but needed for tests
 from dotenv import load_dotenv
+
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
 if os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
-    
+
 if __name__ == '__main__':
     global_init(os.environ.get('DATABASE_URL'))
 
@@ -156,10 +155,10 @@ def logout():
 def edit_digest(id):
     form = DigestsForm()
     if request.method == "GET":
-    
+
         dg = get_session().query(Digests).filter(Digests.id == id,
-                                           Digests.user == current_user
-                                           ).first()
+                                                 Digests.user == current_user
+                                                 ).first()
         if dg:
             form.title.data = dg.title
             form.content.data = dg.content
@@ -187,10 +186,10 @@ def edit_digest(id):
             abort(404)
 
     if form.validate_on_submit():
-    
+
         dg = get_session().query(Digests).filter(Digests.id == id,
-                                           Digests.user == current_user
-                                           ).first()
+                                                 Digests.user == current_user
+                                                 ).first()
         if dg:
             dg.title = form.title.data
             dg.content = form.content.data
@@ -215,10 +214,9 @@ def edit_digest(id):
 @app.route('/digest_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
-
     dg = get_session().query(Digests).filter(Digests.id == id,
-                                       Digests.user == current_user
-                                       ).first()
+                                             Digests.user == current_user
+                                             ).first()
     if dg:
         for elem in dg.link:
             get_session().delete(elem)
@@ -237,7 +235,6 @@ def add_digest():
 
         print(form.all_links[0].data)
 
-    
         digest = Digests()
         digest.title = form.title.data
         digest.content = form.content.data
@@ -267,7 +264,6 @@ def about():
 @app.route('/user')
 @login_required
 def return_user():
-
     user = get_session().query(User).filter(User.id == current_user.id).first()
     return render_template("user.html", user=user)
 
