@@ -72,13 +72,13 @@
                     Created Digests
                 </button>
             </h2>
+            <a href="adddigest" class="btn btn-secondary">add digest</a>
             <div id="collapseOne2" class="accordion-collapse collapse show" aria-labelledby="headingOne"
                  data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     {% for item in user.djs %}
                     <div class="col-md6 border rounded">
                         <h2>{{item.title}}</h2>
-                        <a href="adddigest" class="btn btn-secondary">add digest</a>
                         <div>
                             {{item.content}}
                         </div>
