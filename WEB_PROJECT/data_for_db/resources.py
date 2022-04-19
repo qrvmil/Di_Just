@@ -10,7 +10,7 @@ parser.add_argument('email', help='This field cannot be blank', required=True)
 parser.add_argument('password', help='This field cannot be blank', required=True)
 
 
-# сделать проверку пользователя
+# api сайта
 class UserRegistration(Resource):
     def post(self):
 

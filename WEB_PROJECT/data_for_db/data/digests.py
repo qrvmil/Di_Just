@@ -22,4 +22,3 @@ class Digests(SqlAlchemyBase, SerializerMixin):
     user = orm.relation('User')
 
     link = orm.relation("Links", back_populates='digest')
-

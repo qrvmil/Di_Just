@@ -42,6 +42,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         db = db_session.create_session()
         return db.query(User).filter(User.name == username).first()
 
+    # возвращает всех пользователей
     def return_all():
 
         news = get_session().query(User).all()
@@ -53,6 +54,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
             }
         )
 
+    # удаляет всех пользователей
     def delete_all():
 
         try:

@@ -52,34 +52,6 @@ class LoginForm(FlaskForm):
 
 def main():
     global_init(os.environ.get('DATABASE_URL'))
-    # user = User(name="milana", about="just test", hashed_password="123")
-    # digest = Digests(title="test-1", content="it is the first digest",
-    #             is_private=False)
-    # link = Links(link="test.ru", description="it the first test link eurika")
-    # digest.link.append(link)
-    # user.djs.append(digest)
-    # get_session().add(user)
-    # get_session().commit()
-    #
-    # print(user.name)
-    #
-    # for digest in user.djs:
-    #     print(1)
-    #     print(digest.content)
-    #     for linkk in digest.link:
-    #         print(linkk.description)
-
-    '''app.register_blueprint(news_api.blueprint)
-
-    user = get_session().query(User).filter(User.id == 1).first()
-    news = News(title="Личная запись", content="Эта запись личная",
-                is_private=True)
-    user.news.append(news)
-    get_session().commit()
-
-    for news in user.news:
-        print(1)
-        print(news.content)'''
 
     api.add_resource(resources.UserRegistration, '/api/registration')
     api.add_resource(resources.UserLogin, '/api/login')
@@ -89,6 +61,7 @@ def main():
     api.add_resource(resources.AllUsers, '/api/users')
     api.add_resource(resources.SecretResource, '/api/secret')
 
+    # для локального тестирования
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 
@@ -104,6 +77,7 @@ def index():
     return render_template("index.html", digests=digests)
 
 
+# регистрация новых пользователей
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
     form = RegisterForm()
@@ -129,6 +103,7 @@ def reqister():
     return render_template('register.html', title='Register', form=form)
 
 
+# логин пользоватлей
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -150,12 +125,13 @@ def logout():
     return redirect("/")
 
 
+# редактирование дайджеста
 @app.route('/adddigest/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_digest(id):
     form = DigestsForm()
     if request.method == "GET":
-
+        # получаем все дайдесты текущего пользователя
         dg = get_session().query(Digests).filter(Digests.id == id,
                                                  Digests.user == current_user
                                                  ).first()
@@ -165,26 +141,17 @@ def edit_digest(id):
             form.is_private.data = dg.is_private
 
             i = 0
-
+            # цикл прохода по всем ссылкам в дайджесте
             for link_elem in form.all_links:
                 link_elem.form.link.data = dg.link[0].link
                 link_elem.form.description.data = dg.link[0].description
                 i += 1
 
-            # ПОЧЕМУ ОНО НЕ РАБОТАЕТ
-            # i = 0
-            # for link in dg.link:
-            #     form.all_links.data[i]['link'] = link.link
-            #     print(link.link)
-            #     print('current form link:', form.all_links.data[i]['link'])
-            #     form.all_links.data[i]['description'] = link.description
-            #     print(link.description)
-            #     print(i)
-            #     i += 1
-            print('form all_links data:', form.all_links.data)
         else:
+            # в случае какой-либо ошибки вызываем 404
             abort(404)
 
+    # сохраняем изменения
     if form.validate_on_submit():
 
         dg = get_session().query(Digests).filter(Digests.id == id,
@@ -211,6 +178,7 @@ def edit_digest(id):
                            )
 
 
+# удаление дайжеста
 @app.route('/digest_delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def news_delete(id):
@@ -227,6 +195,7 @@ def news_delete(id):
     return redirect('/')
 
 
+# добавление дайджеста
 @app.route('/adddigest', methods=['GET', 'POST'])
 @login_required
 def add_digest():
@@ -266,6 +235,7 @@ def help():
     return render_template('help.html')
 
 
+# страница пользователя
 @app.route('/user')
 @login_required
 def return_user():

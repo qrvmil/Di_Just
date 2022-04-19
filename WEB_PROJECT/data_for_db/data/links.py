@@ -17,6 +17,5 @@ class Links(SqlAlchemyBase, SerializerMixin):
                                      default=datetime.datetime.now)
 
     djs_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("digests.id"))
+                               sqlalchemy.ForeignKey("digests.id"))
     digest = orm.relation('Digests')
-
