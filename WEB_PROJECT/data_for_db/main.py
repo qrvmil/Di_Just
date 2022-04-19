@@ -261,6 +261,11 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
+
 @app.route('/user')
 @login_required
 def return_user():
